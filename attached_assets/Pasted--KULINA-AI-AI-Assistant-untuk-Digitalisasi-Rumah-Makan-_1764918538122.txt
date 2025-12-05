@@ -1,0 +1,255 @@
+🍽 KULINA.AI
+AI Assistant untuk Digitalisasi Rumah Makan Berbasis Web
+
+KULINA.AI adalah platform berbasis Artificial Intelligence yang digunakan oleh satu rumah makan untuk mengelola operasional bisnis sekaligus melayani pelanggan secara cerdas melalui Dashboard Admin (Pemilik) dan Dashboard Konsumen (Pelanggan) dalam satu sistem terintegrasi.
+
+Platform ini dibangun menggunakan:
+
+Backend: express
+
+Frontend: React 
+
+AI Engine: Claude AI API
+
+Keamanan & Monitoring: Google Services (reCAPTCHA, Analytics, Auth)
+
+🧩 ARSITEKTUR PENGGUNA KULINA.AI
+
+KULINA.AI memiliki 2 tipe dashboard dalam 1 sistem:
+
+Dashboard Admin (Pemilik Rumah Makan) – B2B Internal
+
+Dashboard Konsumen (Pelanggan Rumah Makan) – B2C
+
+Keduanya saling terhubung secara real-time.
+
+🖥 DASHBOARD ADMIN (PEMILIK RUMAH MAKAN)
+
+Digunakan untuk mengelola seluruh operasional usaha secara digital & berbasis AI.
+
+✅ 1. Manajemen Data Menu
+
+Tambah, edit, hapus menu
+
+Kategori makanan & minuman
+
+Status ketersediaan menu
+
+✅ 2. Manajemen Harga & Stok
+
+Update harga otomatis/manual
+
+Stok bahan baku harian
+
+Notifikasi stok menipis
+
+✅ 3. Manajemen Transaksi
+
+Pemantauan pesanan masuk
+
+Status pesanan (diproses, selesai)
+
+Laporan pembayaran
+
+✅ 4. Analisis Review Pelanggan (AI)
+
+AI menganalisis:
+
+Kepuasan pelanggan
+
+Keluhan pelayanan
+
+Kualitas rasa
+
+Output dalam bentuk grafik & insight
+
+✅ 5. Generator Caption Promosi (AI)
+
+Input: nama menu, harga, target pasar
+
+Output otomatis:
+
+Caption Instagram
+
+Hashtag promosi
+
+Copywriting iklan
+
+✅ 6. Upload & Edit Foto Menu Berbasis AI
+
+Upload foto asli dari kamera HP
+
+AI otomatis:
+
+Menghapus background
+
+Mengganti background lebih estetik
+
+Menyesuaikan pencahayaan
+
+Hasil siap untuk katalog & media sosial
+
+✅ 7. Laporan Penjualan
+
+Harian
+
+Mingguan
+
+Bulanan
+
+Grafik omzet & produk terlaris
+
+✅ 8. Rekomendasi Harga & Stok Otomatis (AI)
+
+AI merekomendasikan:
+
+Kenaikan/penurunan harga
+
+Jumlah restock bahan mentah
+
+Berdasarkan:
+
+Penjualan
+
+Review
+
+Tren pembelian
+
+✅ 9. Pengaturan Akun Rumah Makan
+
+Profil usaha
+
+Jam buka
+
+Lokasi
+
+Rekening pembayaran
+
+✅ 10. Monitoring & Keamanan (Google Service)
+
+Google Analytics
+
+Keamanan login
+
+Monitoring aktivitas
+
+🧑‍🍳 DASHBOARD KONSUMEN (PELANGGAN RUMAH MAKAN)
+
+Digunakan oleh pelanggan untuk melihat menu, memesan, dan berinteraksi dengan AI.
+
+✅ 1. Rekomendasi Menu Berbasis AI
+
+Berdasarkan:
+
+Riwayat pesanan
+
+Preferensi rasa
+
+Jam makan
+
+Contoh:
+
+“Hari ini cocok pesan Ayam Geprek Level 3 karena kamu sering memilih menu pedas.”
+
+✅ 2. Chatbot Asisten Kuliner
+
+Tanya menu
+
+Tanya rekomendasi
+
+Tanya promo
+
+Tanya estimasi harga
+
+Semua dijawab oleh Claude AI
+
+✅ 3. Pemesanan & Keranjang Digital
+
+Tambah menu
+
+Catatan pesanan
+
+Checkout cepat
+
+Estimasi harga otomatis
+
+✅ 4. Review & Rating
+
+Rating 1–5
+
+Komentar pelanggan
+
+Upload foto setelah makan
+
+Review ini dianalisis oleh AI di Dashboard Admin
+
+✅ 5. Galeri Menu Estetik
+
+Foto menu hasil edit AI
+
+Tampilan menarik & profesional
+
+Zoom & fokus detail makanan
+
+✅ 6. Promo & Voucher Otomatis
+
+Promo personal dari AI
+
+Diskon pelanggan loyal
+
+Promo jam sepi
+
+✅ 7. Riwayat Pesanan
+
+Lihat pesanan sebelumnya
+
+Download struk
+
+Pesan ulang dengan 1 klik
+
+✅ 8. Menu Favorit
+
+Simpan menu favorit
+
+Notifikasi jika ada promo
+
+✅ 9. Notifikasi Pintar
+
+Status pesanan
+
+Promo terbaru
+
+Rekomendasi waktu makan
+
+✅ 10. Profil & Keamanan Akun
+
+Data diri
+
+Alamat
+
+OTP Login
+
+Keamanan akun berbasis Google
+
+🔄 INTEGRASI ADMIN & KONSUMEN (SATU RUMAH MAKAN)
+Aktivitas Konsumen	Dampak ke Admin
+Memesan menu	Masuk ke manajemen transaksi
+Memberi review	Dianalisis AI
+Memilih menu favorit	Jadi referensi menu unggulan
+Menggunakan voucher	Dicatat pada laporan promo
+
+Semua terhubung dalam 1 sistem rumah makan digital berbasis AI.
+
+💼 MANFAAT KULINA.AI BAGI RUMAH MAKAN
+
+✅ Meningkatkan omzet
+✅ Meningkatkan kualitas pelayanan
+✅ Promosi otomatis tanpa tim marketing
+✅ Stok & harga lebih optimal
+✅ Foto menu jauh lebih profesional
+✅ Pengambilan keputusan berbasis data & AI
+✅ Rumah makan naik kelas ke level digital
+
+🎯 DESKRIPSI SINGKAT UNTUK SLIDE PRESENTASI
+
+KULINA.AI adalah platform berbasis Artificial Intelligence yang digunakan oleh satu rumah makan untuk mengelola operasional usaha dan melayani pelanggan secara cerdas melalui dua dashboard terintegrasi, yaitu Dashboard Admin untuk pemilik usaha dan Dashboard Konsumen untuk pelanggan. Sistem ini mampu memberikan rekomendasi menu, menganalisis review, mengelola stok dan harga, menghasilkan konten promosi otomatis, serta meningkatkan kualitas visual menu melalui teknologi AI.
