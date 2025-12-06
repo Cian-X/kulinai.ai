@@ -1,6 +1,14 @@
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/layouts/admin-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from "recharts";
+import { useAIAnalyzeReviews } from "@/hooks/use-ai";
+import { Loader2, Sparkles } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import type { ReviewsResponse, ReviewForAnalysis, AIAnalyzeReviewsResponse } from "@/types/api";
+import type { Review } from "@shared/schema";
 
 const salesData = [
   { name: 'Sen', total: 1200000 },
@@ -12,13 +20,75 @@ const salesData = [
   { name: 'Min', total: 3200000 },
 ];
 
-const sentimentData = [
-  { name: 'Positif', value: 75, color: '#22c55e' },
-  { name: 'Netral', value: 20, color: '#eab308' },
-  { name: 'Negatif', value: 5, color: '#ef4444' },
+const mockReviews = [
+  { name: "Sari", rating: 5, comment: "Enak banget ayam gepreknya! Pedesnya pas.", time: "2 jam lalu" },
+  { name: "Rudi", rating: 4, comment: "Pelayanan cepat, tapi tempat agak panas.", time: "4 jam lalu" },
+  { name: "Dina", rating: 5, comment: "Best nasi goreng in town!", time: "5 jam lalu" },
+  { name: "Budi", rating: 3, comment: "Rasanya biasa aja, harganya agak mahal.", time: "1 hari lalu" },
+  { name: "Siti", rating: 5, comment: "Pelayanan ramah, makanan fresh!", time: "1 hari lalu" },
 ];
 
 export default function AdminAnalytics() {
+  const [sentimentData, setSentimentData] = useState([
+    { name: 'Positif', value: 75, color: '#22c55e' },
+    { name: 'Netral', value: 20, color: '#eab308' },
+    { name: 'Negatif', value: 5, color: '#ef4444' },
+  ]);
+  const [aiInsights, setAiInsights] = useState<string[]>([]);
+  const [aiRecommendations, setAiRecommendations] = useState<string[]>([]);
+  const analyzeReviewsMutation = useAIAnalyzeReviews();
+
+  // Get real reviews from API
+  const { data: reviewsForAnalysis = [], isLoading: reviewsLoading } = useQuery<ReviewForAnalysis[]>({
+    queryKey: ["/api/reviews/for-analysis"],
+  });
+
+  // Get full reviews for display
+  const { data: reviews = [] } = useQuery<ReviewsResponse>({
+    queryKey: ["/api/reviews"],
+  });
+
+  const handleAnalyzeReviews = () => {
+    const reviewsList = reviewsForAnalysis as ReviewForAnalysis[];
+    const reviewsToAnalyze = reviewsList.length > 0 ? reviewsList : mockReviews;
+    analyzeReviewsMutation.mutate(reviewsToAnalyze, {
+      onSuccess: (data: AIAnalyzeReviewsResponse) => {
+        if (data.sentiment) {
+          setSentimentData([
+            { name: 'Positif', value: data.sentiment.positive || 0, color: '#22c55e' },
+            { name: 'Netral', value: data.sentiment.neutral || 0, color: '#eab308' },
+            { name: 'Negatif', value: data.sentiment.negative || 0, color: '#ef4444' },
+          ]);
+        }
+        if (data.insights) setAiInsights(data.insights);
+        if (data.recommendations) setAiRecommendations(data.recommendations);
+      },
+    });
+  };
+
+  useEffect(() => {
+    // Auto-analyze on mount when reviews are loaded
+    const reviewsList = reviewsForAnalysis as ReviewForAnalysis[];
+    if (!reviewsLoading && reviewsList.length > 0) {
+      handleAnalyzeReviews();
+    } else if (!reviewsLoading && reviewsList.length === 0) {
+      // Use mock data if no reviews yet
+      analyzeReviewsMutation.mutate(mockReviews, {
+        onSuccess: (data: AIAnalyzeReviewsResponse) => {
+          if (data.sentiment) {
+            setSentimentData([
+              { name: 'Positif', value: data.sentiment.positive || 0, color: '#22c55e' },
+              { name: 'Netral', value: data.sentiment.neutral || 0, color: '#eab308' },
+              { name: 'Negatif', value: data.sentiment.negative || 0, color: '#ef4444' },
+            ]);
+          }
+          if (data.insights) setAiInsights(data.insights);
+          if (data.recommendations) setAiRecommendations(data.recommendations);
+        },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reviewsLoading, reviewsForAnalysis.length]);
   return (
     <AdminLayout title="Analisis AI & Laporan">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -53,8 +123,24 @@ export default function AdminAnalytics() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Sentimen Pelanggan</CardTitle>
-            <CardDescription>Analisis AI dari ulasan</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Sentimen Pelanggan</CardTitle>
+                <CardDescription>Analisis AI dari ulasan</CardDescription>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleAnalyzeReviews}
+                disabled={analyzeReviewsMutation.isPending}
+              >
+                {analyzeReviewsMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
              <div className="h-[200px] w-full flex items-center justify-center">
@@ -99,20 +185,32 @@ export default function AdminAnalytics() {
             <CardDescription>Actionable insights untuk bisnis Anda</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
-              <h4 className="font-bold text-blue-700 dark:text-blue-300 mb-1">Stok Menipis</h4>
-              <p className="text-sm text-blue-600 dark:text-blue-400">
-                Stok "Ayam Potong" diprediksi habis dalam 2 hari. Segera lakukan restock sebanyak 50kg.
-              </p>
-              <Button size="sm" variant="outline" className="mt-2 border-blue-200 text-blue-700 hover:bg-blue-100">Order Supplier</Button>
-            </div>
-            <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-100 dark:border-orange-800">
-              <h4 className="font-bold text-orange-700 dark:text-orange-300 mb-1">Tren Menu</h4>
-              <p className="text-sm text-orange-600 dark:text-orange-400">
-                Penjualan "Es Kopi Susu" naik 20% minggu ini. Pertimbangkan membuat paket bundling dengan Roti Bakar.
-              </p>
-              <Button size="sm" variant="outline" className="mt-2 border-orange-200 text-orange-700 hover:bg-orange-100">Buat Promo Bundling</Button>
-            </div>
+            {analyzeReviewsMutation.isPending ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <span className="ml-2 text-sm text-muted-foreground">Menganalisis review...</span>
+              </div>
+            ) : (
+              <>
+                {aiInsights.map((insight, idx) => (
+                  <div key={idx} className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+                    <h4 className="font-bold text-blue-700 dark:text-blue-300 mb-1">Insight #{idx + 1}</h4>
+                    <p className="text-sm text-blue-600 dark:text-blue-400">{insight}</p>
+                  </div>
+                ))}
+                {aiRecommendations.map((rec, idx) => (
+                  <div key={idx} className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-100 dark:border-orange-800">
+                    <h4 className="font-bold text-orange-700 dark:text-orange-300 mb-1">Rekomendasi #{idx + 1}</h4>
+                    <p className="text-sm text-orange-600 dark:text-orange-400">{rec}</p>
+                  </div>
+                ))}
+                {aiInsights.length === 0 && aiRecommendations.length === 0 && (
+                  <div className="p-4 bg-zinc-50 dark:bg-zinc-900/20 rounded-lg border border-zinc-200 dark:border-zinc-800 text-center text-sm text-muted-foreground">
+                    Klik tombol analisis untuk mendapatkan insight AI
+                  </div>
+                )}
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -122,22 +220,36 @@ export default function AdminAnalytics() {
              <CardDescription>Apa kata pelanggan hari ini?</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {[
-              { name: "Sari", rating: 5, comment: "Enak banget ayam gepreknya! Pedesnya pas.", time: "2 jam lalu" },
-              { name: "Rudi", rating: 4, comment: "Pelayanan cepat, tapi tempat agak panas.", time: "4 jam lalu" },
-              { name: "Dina", rating: 5, comment: "Best nasi goreng in town!", time: "5 jam lalu" },
-            ].map((review, i) => (
-              <div key={i} className="border-b border-zinc-100 dark:border-zinc-800 last:border-0 pb-4 last:pb-0">
-                <div className="flex justify-between items-start mb-1">
-                  <span className="font-bold">{review.name}</span>
-                  <span className="text-xs text-muted-foreground">{review.time}</span>
-                </div>
-                <div className="flex text-yellow-400 mb-1">
-                  {[...Array(review.rating)].map((_, i) => <span key={i}>★</span>)}
-                </div>
-                <p className="text-sm text-muted-foreground">{review.comment}</p>
-              </div>
-            ))}
+            {(reviews as Review[]).length === 0 ? (
+              <p className="text-center text-muted-foreground py-4">Belum ada review</p>
+            ) : (
+              (reviews as Review[]).slice(0, 5).map((review, i) => {
+                const timeAgo = review.createdAt 
+                  ? new Date(review.createdAt).toLocaleDateString('id-ID', { 
+                      day: 'numeric', 
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })
+                  : 'Baru saja';
+                
+                return (
+                  <div key={i} className="border-b border-zinc-100 dark:border-zinc-800 last:border-0 pb-4 last:pb-0">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="font-bold">{review.userName}</span>
+                      <span className="text-xs text-muted-foreground">{timeAgo}</span>
+                    </div>
+                    <div className="flex text-yellow-400 mb-1">
+                      {[...Array(review.rating)].map((_, i) => <span key={i}>★</span>)}
+                    </div>
+                    <p className="text-sm text-muted-foreground">{review.comment}</p>
+                    {review.menuName && (
+                      <p className="text-xs text-muted-foreground mt-1">Menu: {review.menuName}</p>
+                    )}
+                  </div>
+                );
+              })
+            )}
           </CardContent>
         </Card>
       </div>

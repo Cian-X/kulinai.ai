@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminLayout } from "@/components/layouts/admin-layout";
@@ -7,10 +9,84 @@ import {
   ShoppingBag,
   ArrowUpRight,
   ArrowDownRight,
-  Clock
+  Clock,
+  Sparkles,
+  Loader2
 } from "lucide-react";
+import { useAIPriceStockRecommendations } from "@/hooks/use-ai";
+import type { OrdersResponse, ReviewsResponse, MenusResponse, AIPriceStockResponse } from "@/types/api";
+import type { Order, Review } from "@shared/schema";
 
 export default function AdminDashboard() {
+  const [aiInsights, setAiInsights] = useState<string[]>([]);
+  const priceStockMutation = useAIPriceStockRecommendations();
+
+  // Get real data from API
+  const { data: orders = [] } = useQuery<OrdersResponse>({
+    queryKey: ["/api/orders"],
+  });
+
+  const { data: reviews = [] } = useQuery<ReviewsResponse>({
+    queryKey: ["/api/reviews"],
+  });
+
+  const { data: menus = [] } = useQuery<MenusResponse>({
+    queryKey: ["/api/menus"],
+  });
+
+  useEffect(() => {
+    // Calculate sales data from orders
+    const ordersList = orders as Order[];
+    const salesMap = new Map<string, { quantity: number; revenue: number }>();
+    ordersList.forEach((order) => {
+      order.items.forEach((item) => {
+        const existing = salesMap.get(item.menuName) || { quantity: 0, revenue: 0 };
+        salesMap.set(item.menuName, {
+          quantity: existing.quantity + item.quantity,
+          revenue: existing.revenue + (item.price * item.quantity),
+        });
+      });
+    });
+
+    const salesData = Array.from(salesMap.entries()).map(([menuName, data]) => ({
+      menuName,
+      ...data,
+    }));
+
+    // Format reviews for AI
+    const reviewsList = reviews as Review[];
+    const formattedReviews = reviewsList.map((r) => ({
+      menuName: r.menuName,
+      rating: r.rating,
+      comment: r.comment,
+    }));
+
+    // Mock stock levels (in production, get from inventory system)
+    const stockLevels = [
+      { itemName: "Ayam Potong", currentStock: 30, minStock: 50 },
+      { itemName: "Beras", currentStock: 100, minStock: 80 },
+      { itemName: "Minyak Goreng", currentStock: 20, minStock: 30 },
+    ];
+
+    const aiData = {
+      salesData: salesData.length > 0 ? salesData : [
+        { menuName: "Ayam Geprek Level 5", quantity: 150, revenue: 3750000 },
+        { menuName: "Nasi Goreng Spesial", quantity: 120, revenue: 2400000 },
+        { menuName: "Es Kopi Susu", quantity: 200, revenue: 2000000 },
+      ],
+      reviews: formattedReviews.length > 0 ? formattedReviews : [
+        { menuName: "Ayam Geprek Level 5", rating: 5, comment: "Enak banget!" },
+      ],
+      stockLevels,
+    };
+
+    priceStockMutation.mutate(aiData, {
+      onSuccess: (data: AIPriceStockResponse) => {
+        if (data.insights) setAiInsights(data.insights);
+      },
+    });
+  }, [orders, reviews]);
+
   return (
     <AdminLayout title="Dashboard">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -99,16 +175,91 @@ export default function AdminDashboard() {
 
         <Card className="col-span-1 bg-gradient-to-br from-primary to-orange-600 text-white border-none">
           <CardHeader>
-            <CardTitle className="text-white">AI Assistant Insight</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-white">AI Assistant Insight</CardTitle>
+              {priceStockMutation.isPending && (
+                <Loader2 className="h-4 w-4 animate-spin text-white/80" />
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <p className="text-white/90 leading-relaxed">
-                "Halo Pak Budi! Berdasarkan data hari ini, menu <strong>Ayam Geprek</strong> sangat diminati saat jam makan siang. 
-                Saran saya, tingkatkan stok ayam untuk besok siang dan coba buat promo <em>Happy Hour</em> jam 2-4 sore untuk meningkatkan penjualan minuman."
-              </p>
-              <Button variant="secondary" className="w-full text-primary font-bold">
-                Lihat Detail Analisis
+              {priceStockMutation.isPending ? (
+                <p className="text-white/90 leading-relaxed">
+                  AI sedang menganalisis data penjualan dan review...
+                </p>
+              ) : aiInsights.length > 0 ? (
+                <div className="space-y-3">
+                  {aiInsights.map((insight, idx) => (
+                    <p key={idx} className="text-white/90 leading-relaxed">
+                      {insight}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-white/90 leading-relaxed">
+                  "Halo Pak Budi! Berdasarkan data hari ini, menu <strong>Ayam Geprek</strong> sangat diminati saat jam makan siang. 
+                  Saran saya, tingkatkan stok ayam untuk besok siang dan coba buat promo <em>Happy Hour</em> jam 2-4 sore untuk meningkatkan penjualan minuman."
+                </p>
+              )}
+              <Button 
+                variant="secondary" 
+                className="w-full text-primary font-bold"
+                onClick={() => {
+                  const ordersList = orders as Order[];
+                  const salesMap = new Map<string, { quantity: number; revenue: number }>();
+                  ordersList.forEach((order) => {
+                    order.items.forEach((item) => {
+                      const existing = salesMap.get(item.menuName) || { quantity: 0, revenue: 0 };
+                      salesMap.set(item.menuName, {
+                        quantity: existing.quantity + item.quantity,
+                        revenue: existing.revenue + (item.price * item.quantity),
+                      });
+                    });
+                  });
+
+                  const salesData = Array.from(salesMap.entries()).map(([menuName, data]) => ({
+                    menuName,
+                    ...data,
+                  }));
+
+                  const reviewsList = reviews as Review[];
+                  const formattedReviews = reviewsList.map((r) => ({
+                    menuName: r.menuName,
+                    rating: r.rating,
+                    comment: r.comment,
+                  }));
+
+                  const stockLevels = [
+                    { itemName: "Ayam Potong", currentStock: 30, minStock: 50 },
+                    { itemName: "Beras", currentStock: 100, minStock: 80 },
+                  ];
+
+                  priceStockMutation.mutate({
+                    salesData: salesData.length > 0 ? salesData : [
+                      { menuName: "Ayam Geprek Level 5", quantity: 150, revenue: 3750000 },
+                    ],
+                    reviews: formattedReviews.length > 0 ? formattedReviews : [],
+                    stockLevels,
+                  }, {
+                    onSuccess: (data: AIPriceStockResponse) => {
+                      if (data.insights) setAiInsights(data.insights);
+                    },
+                  });
+                }}
+                disabled={priceStockMutation.isPending}
+              >
+                {priceStockMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Menganalisis...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Refresh Analisis AI
+                  </>
+                )}
               </Button>
             </div>
           </CardContent>

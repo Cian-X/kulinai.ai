@@ -13,6 +13,8 @@ import AdminAnalytics from "@/pages/admin/analytics";
 import AdminPromo from "@/pages/admin/promo";
 import AdminDashboard from "@/pages/admin/dashboard";
 import ConsumerDashboard from "@/pages/consumer/dashboard";
+import ConsumerFavorites from "@/pages/consumer/favorites";
+import ConsumerProfile from "@/pages/consumer/profile";
 
 import AuthOptions from "@/pages/auth-options";
 
@@ -34,6 +36,8 @@ function Router() {
       <Route path="/admin/promo" component={AdminPromo} />
       
       <Route path="/consumer/dashboard" component={ConsumerDashboard} />
+      <Route path="/consumer/favorites" component={ConsumerFavorites} />
+      <Route path="/consumer/profile" component={ConsumerProfile} />
       
       <Route component={NotFound} />
     </Switch>

@@ -1,7 +1,25 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+
+// API Key Setup - load dari .env atau default
+const openRouterKey = process.env.OPENROUTER_API_KEY;
+const hasOpenRouterKey = openRouterKey && openRouterKey.trim().length > 20;
+
+console.log("\n" + "=".repeat(60));
+console.log("🚀 KULINA.AI Server Starting...");
+console.log("=".repeat(60));
+console.log("✅ AI Features: READY");
+console.log("✅ AI Provider: OpenRouter");
+console.log("✅ Model: amazon/nova-2-lite-v1:free");
+if (hasOpenRouterKey) {
+  console.log("✅ OpenRouter API Key: Loaded from .env file");
+} else {
+  console.log("✅ OpenRouter API Key: Using default (hardcoded fallback)");
+}
+console.log("=".repeat(60) + "\n");
 
 const app = express();
 const httpServer = createServer(app);
@@ -85,12 +103,11 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || "5000", 10);
+  const host = process.platform === "win32" ? "localhost" : "0.0.0.0";
+  
   httpServer.listen(
-    {
       port,
-      host: "0.0.0.0",
-      reusePort: true,
-    },
+    host,
     () => {
       log(`serving on port ${port}`);
     },

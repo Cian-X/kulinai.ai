@@ -5,41 +5,66 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Wand2, Copy, Check } from "lucide-react";
+import { Wand2, Copy, Check, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAIGeneratePromo } from "@/hooks/use-ai";
+import type { AIPromoResponse } from "@/types/api";
 
 export default function AdminPromo() {
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [menuName, setMenuName] = useState("");
+  const [price, setPrice] = useState("");
+  const [targetMarket, setTargetMarket] = useState("");
+  const [tone, setTone] = useState("Santai");
+  const [additionalInfo, setAdditionalInfo] = useState("");
   const [generatedCaption, setGeneratedCaption] = useState("");
+  const [generatedHashtags, setGeneratedHashtags] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
+  const generatePromoMutation = useAIGeneratePromo();
 
-  const handleGenerate = (e: React.FormEvent) => {
+  const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsGenerating(true);
     
-    // Simulate AI Generation
-    setTimeout(() => {
-      setGeneratedCaption(`🔥 PROMO SPESIAL HARI INI! 🔥
+    if (!menuName || !price || !targetMarket) {
+      toast({
+        title: "Data Tidak Lengkap",
+        description: "Mohon isi nama menu, harga, dan target pasar.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-Lagi lapar tapi bingung mau makan apa? Cobain Ayam Geprek Level 5 kami yang pedasnya nendang banget! 🌶️🐔
+    try {
+      const result = await generatePromoMutation.mutateAsync({
+        menuName,
+        price: Number(price),
+        targetMarket,
+        tone,
+        additionalInfo: additionalInfo || undefined,
+      }) as AIPromoResponse;
 
-Cuma Rp 25.000 aja, kamu udah bisa nikmatin sensasi pedas gurih yang bikin nagih. Cocok banget buat makan siang bareng temen kantor atau keluarga.
-
-✅ Ayam Fresh Pilihan
-✅ Sambal Dadakan
-✅ Nasi Hangat Pulen
-
-Tunggu apalagi? Yuk mampir ke Rumah Makan Sederhana atau pesan via aplikasi sekarang! 
-
-#AyamGeprek #KulinerPedas #MakanSiang #PromoMakanan #KulinaAI #Foodie`);
-      setIsGenerating(false);
-    }, 2000);
+      setGeneratedCaption(result.caption || "");
+      setGeneratedHashtags(result.hashtags || []);
+      toast({
+        title: "Berhasil!",
+        description: "Caption promosi berhasil dibuat oleh AI.",
+      });
+    } catch (error: any) {
+      console.error("Promo generation error:", error);
+      toast({
+        title: "Error",
+        description: error?.message?.includes("401") 
+          ? "Masalah koneksi AI. Pastikan API key sudah benar." 
+          : "Gagal membuat caption. Silakan coba lagi.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(generatedCaption);
+    const fullText = generatedCaption + (generatedHashtags.length > 0 ? "\n\n" + generatedHashtags.join(" ") : "");
+    navigator.clipboard.writeText(fullText);
     setCopied(true);
     toast({ title: "Tersalin!", description: "Caption berhasil disalin ke clipboard." });
     setTimeout(() => setCopied(false), 2000);
@@ -59,29 +84,36 @@ Tunggu apalagi? Yuk mampir ke Rumah Makan Sederhana atau pesan via aplikasi seka
             <CardContent>
               <form onSubmit={handleGenerate} className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Pilih Menu</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih menu yang ingin dipromosikan" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ayam">Ayam Geprek Level 5</SelectItem>
-                      <SelectItem value="nasgor">Nasi Goreng Spesial</SelectItem>
-                      <SelectItem value="sate">Sate Ayam Madura</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label>Nama Menu</Label>
+                  <Input 
+                    placeholder="Contoh: Ayam Geprek Level 5" 
+                    value={menuName}
+                    onChange={(e) => setMenuName(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Harga</Label>
+                  <Input 
+                    type="number" 
+                    placeholder="25000" 
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    required
+                  />
                 </div>
                 
                 <div className="space-y-2">
                   <Label>Target Pasar</Label>
-                  <Select>
+                  <Select value={targetMarket} onValueChange={setTargetMarket}>
                     <SelectTrigger>
                       <SelectValue placeholder="Siapa target promosi ini?" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="mahasiswa">Mahasiswa / Pelajar (Hemat)</SelectItem>
-                      <SelectItem value="kantor">Orang Kantor (Makan Siang)</SelectItem>
-                      <SelectItem value="keluarga">Keluarga (Akhir Pekan)</SelectItem>
+                      <SelectItem value="Mahasiswa / Pelajar (Hemat)">Mahasiswa / Pelajar (Hemat)</SelectItem>
+                      <SelectItem value="Orang Kantor (Makan Siang)">Orang Kantor (Makan Siang)</SelectItem>
+                      <SelectItem value="Keluarga (Akhir Pekan)">Keluarga (Akhir Pekan)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -89,9 +121,16 @@ Tunggu apalagi? Yuk mampir ke Rumah Makan Sederhana atau pesan via aplikasi seka
                 <div className="space-y-2">
                   <Label>Tone Bahasa</Label>
                   <div className="flex gap-2">
-                    {['Santai', 'Formal', 'Lucu', 'Hype'].map((tone) => (
-                      <Button key={tone} type="button" variant="outline" size="sm" className="flex-1">
-                        {tone}
+                    {['Santai', 'Formal', 'Lucu', 'Hype'].map((toneOption) => (
+                      <Button 
+                        key={toneOption} 
+                        type="button" 
+                        variant={tone === toneOption ? "default" : "outline"} 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => setTone(toneOption)}
+                      >
+                        {toneOption}
                       </Button>
                     ))}
                   </div>
@@ -99,11 +138,19 @@ Tunggu apalagi? Yuk mampir ke Rumah Makan Sederhana atau pesan via aplikasi seka
 
                 <div className="space-y-2">
                   <Label>Info Tambahan (Opsional)</Label>
-                  <Textarea placeholder="Contoh: Diskon 20% khusus hari Jumat, Gratis Es Teh..." />
+                  <Textarea 
+                    placeholder="Contoh: Diskon 20% khusus hari Jumat, Gratis Es Teh..." 
+                    value={additionalInfo}
+                    onChange={(e) => setAdditionalInfo(e.target.value)}
+                  />
                 </div>
 
-                <Button type="submit" className="w-full bg-gradient-to-r from-primary to-orange-600 hover:opacity-90 transition-opacity" disabled={isGenerating}>
-                  {isGenerating ? (
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-primary to-orange-600 hover:opacity-90 transition-opacity" 
+                  disabled={generatePromoMutation.isPending}
+                >
+                  {generatePromoMutation.isPending ? (
                     <>
                       <Wand2 className="mr-2 h-4 w-4 animate-spin" />
                       Sedang Meracik Kata...
@@ -111,7 +158,7 @@ Tunggu apalagi? Yuk mampir ke Rumah Makan Sederhana atau pesan via aplikasi seka
                   ) : (
                     <>
                       <Wand2 className="mr-2 h-4 w-4" />
-                      Generate Caption
+                      Generate Caption dengan AI
                     </>
                   )}
                 </Button>
@@ -134,9 +181,20 @@ Tunggu apalagi? Yuk mampir ke Rumah Makan Sederhana atau pesan via aplikasi seka
                     exit={{ opacity: 0 }}
                     className="relative bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800"
                   >
-                    <pre className="whitespace-pre-wrap font-sans text-sm text-foreground leading-relaxed">
-                      {generatedCaption}
-                    </pre>
+                    <div className="space-y-4">
+                      <pre className="whitespace-pre-wrap font-sans text-sm text-foreground leading-relaxed">
+                        {generatedCaption}
+                      </pre>
+                      {generatedHashtags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 pt-2 border-t border-zinc-200 dark:border-zinc-800">
+                          {generatedHashtags.map((tag, idx) => (
+                            <span key={idx} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     <div className="absolute top-2 right-2">
                       <Button variant="ghost" size="icon" onClick={handleCopy}>
                         {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}

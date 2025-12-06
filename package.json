@@ -5,9 +5,9 @@
   "license": "MIT",
   "scripts": {
     "dev:client": "vite dev --port 5000",
-    "dev": "NODE_ENV=development tsx server/index.ts",
+    "dev": "cross-env NODE_ENV=development KOLOSAL_API_KEY=kol_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZmU5ZjgzNWUtYmJhYS00ODQ2LWI4NWEtMDQ3NzRmZjA0ODk3Iiwia2V5X2lkIjoiY2I2Njg4ODMtNzA3MC00ZGIyLTlhNmMtMDc5MTc0MzhiZjEzIiwia2V5X25hbWUiOiJwZWN1dCIsImVtYWlsIjoicGF0dXJvaG1hbmFiZHVsYXppejAxQGdtYWlsLmNvbSIsInJhdGVfbGltaXRfcnBzIjpudWxsLCJtYXhfY3JlZGl0X3VzZSI6bnVsbCwiY3JlYXRlZF9hdCI6MTc2NTAwMTYzNiwiZXhwaXJlc19hdCI6MTc5NjUzNzYzNiwiaWF0IjoxNzY1MDAxNjM2fQ.0Gf53Dn4QIuKypnXqbG-BEBujrO0Vy0FBz1hagWN0g8 tsx server/index.ts",
     "build": "tsx script/build.ts",
-    "start": "NODE_ENV=production node dist/index.cjs",
+    "start": "cross-env NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
     "db:push": "drizzle-kit push"
   },
@@ -47,6 +47,7 @@
     "cmdk": "^1.1.1",
     "connect-pg-simple": "^10.0.0",
     "date-fns": "^3.6.0",
+    "dotenv": "^17.2.3",
     "drizzle-orm": "^0.39.3",
     "drizzle-zod": "^0.7.0",
     "embla-carousel-react": "^8.6.0",
@@ -92,6 +93,7 @@
     "@types/ws": "^8.5.13",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.21",
+    "cross-env": "^10.1.0",
     "drizzle-kit": "^0.31.4",
     "esbuild": "^0.25.0",
     "postcss": "^8.5.6",
