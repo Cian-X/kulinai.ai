@@ -5,10 +5,12 @@ import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  root: "client",
   plugins: [react(), tailwindcss()],
   build: {
-    outDir: "../dist/client_dist",
+    outDir: "dist/client_dist",
+    rollupOptions: {
+      input: 'client/index.html'
+    }
   },
   resolve: {
     alias: {
