@@ -7,6 +7,9 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   root: "client",
   plugins: [react(), tailwindcss()],
+  build: {
+    outDir: "../dist/client_dist",
+  },
   resolve: {
     alias: {
       "@": path.resolve("./client/src"),
