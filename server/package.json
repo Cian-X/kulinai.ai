@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-	"prestart": "cd ../client && npm ci && npm run build",
     "start": "node index.js",
     "dev": "nodemon index.js",
     "migrate": "node migrate.js",
