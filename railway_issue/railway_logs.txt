@@ -1,13 +1,16 @@
-ee70d62b5a989f8a.js?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo:73 Uncaught Error: Minified React error #418; visit https://react.dev/errors/418?args[]=text&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
-    at rZ (ee70d62b5a989f8a.js?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo:73:46979)
-    at rJ (ee70d62b5a989f8a.js?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo:73:47872)
-    at ee70d62b5a989f8a.js?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo:73:143946
-    at sB (ee70d62b5a989f8a.js?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo:73:149204)
-    at sA (ee70d62b5a989f8a.js?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo:73:140439)
-    at ee70d62b5a989f8a.js?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo:73:140223
-    at sR (ee70d62b5a989f8a.js?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo:73:140231)
-    at sN (ee70d62b5a989f8a.js?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo:73:135331)
-    at cs (ee70d62b5a989f8a.js?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo:73:169894)
-    at cl (ee70d62b5a989f8a.js?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo:73:167797)
-The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
-3bNZ2Uu1ttupzyDBWT7No8fwCaWJ#L45:1 The resource https://vercel.com/_next/static/chunks/fd3df160f024301f.css?dpl=dpl_HWVRAgDcPNZpwWE8hx616vjKd4mo was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+E:\kulinai-ai>git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   railway_issue/railway_logs.txt
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        git
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+E:\kulinai-ai>
