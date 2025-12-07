@@ -6,7 +6,7 @@
   "scripts": {
     "dev:client": "vite dev --port 5000",
     "dev": "cross-env NODE_ENV=development KOLOSAL_API_KEY=kol_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZmU5ZjgzNWUtYmJhYS00ODQ2LWI4NWEtMDQ3NzRmZjA0ODk3Iiwia2V5X2lkIjoiY2I2Njg4ODMtNzA3MC00ZGIyLTlhNmMtMDc5MTc0MzhiZjEzIiwia2V5X25hbWUiOiJwZWN1dCIsImVtYWlsIjoicGF0dXJvaG1hbmFiZHVsYXppejAxQGdtYWlsLmNvbSIsInJhdGVfbGltaXRfcnBzIjpudWxsLCJtYXhfY3JlZGl0X3VzZSI6bnVsbCwiY3JlYXRlZF9hdCI6MTc2NTAwMTYzNiwiZXhwaXJlc19hdCI6MTc5NjUzNzYzNiwiaWF0IjoxNzY1MDAxNjM2fQ.0Gf53Dn4QIuKypnXqbG-BEBujrO0Vy0FBz1hagWN0g8 tsx server/index.ts",
-    "build": "npx tsx script/build.ts",
+    "build": "tsx script/build.ts",
     "start": "cross-env NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
     "db:push": "drizzle-kit push"
