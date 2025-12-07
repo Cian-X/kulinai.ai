@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "outputDirectory": "dist/client",
+  "builds": [
+    {
+      "src": "dist/index.cjs",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["dist/**"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "dist/index.cjs"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
