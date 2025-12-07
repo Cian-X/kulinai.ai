@@ -10,6 +10,7 @@ import { AIChatbot } from "@/components/ai-chatbot";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
+import { useMenus } from "@/hooks/useMenus";
 import type { MenusResponse, CartResponse, OrderHistoryResponse, FavoritesResponse, AIRecommendationResponse } from "@/types/api";
 import type { Menu, CartItem } from "@shared/schema";
 
@@ -563,3 +564,5 @@ export default function ConsumerDashboard() {
     </div>
   );
 }
+
+

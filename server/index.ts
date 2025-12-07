@@ -1,10 +1,11 @@
+import cors from "cors";
 import "dotenv/config";
-import express, { type Request, Response, NextFunction } from "express";
+import express, { type Request, type Response, type NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
-import { createServer } from "http";
+import { createServer, type Server as HttpServer } from "http";
 
-// API Key Setup - load dari .env atau default
+// ====== LOG STARTUP INFO (AI, OpenRouter) ======
 const openRouterKey = process.env.OPENROUTER_API_KEY;
 const hasOpenRouterKey = openRouterKey && openRouterKey.trim().length > 20;
 
@@ -21,8 +22,17 @@ if (hasOpenRouterKey) {
 }
 console.log("=".repeat(60) + "\n");
 
+// ====== SETUP EXPRESS + HTTP SERVER ======
 const app = express();
 const httpServer = createServer(app);
+
+// ⬇⬇⬇ tambahin ini
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:3000"],
+    credentials: true,
+  }),
+);
 
 declare module "http" {
   interface IncomingMessage {
@@ -30,6 +40,7 @@ declare module "http" {
   }
 }
 
+// JSON body parser + rawBody
 app.use(
   express.json({
     verify: (req, _res, buf) => {
@@ -40,6 +51,7 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
+// ====== LOG HELPER ======
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -51,10 +63,11 @@ export function log(message: string, source = "express") {
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
+// ====== MIDDLEWARE LOGGING UNTUK /api ======
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  let capturedJsonResponse: Record<string, any> | undefined;
 
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
@@ -69,7 +82,6 @@ app.use((req, res, next) => {
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
-
       log(logLine);
     }
   });
@@ -77,39 +89,31 @@ app.use((req, res, next) => {
   next();
 });
 
+// ====== BOOTSTRAP ROUTES + DEV/PROD ======
 (async () => {
   await registerRoutes(httpServer, app);
 
+  // error handler global
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
     res.status(status).json({ message });
-    throw err;
+    console.error(err);
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === "production") {
     serveStatic(app);
   } else {
     const { setupVite } = await import("./vite");
     await setupVite(httpServer, app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
+  // Port & host
   const port = parseInt(process.env.PORT || "5000", 10);
   const host = process.platform === "win32" ? "localhost" : "0.0.0.0";
-  
-  httpServer.listen(
-      port,
-    host,
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
+
+  httpServer.listen(port, host, () => {
+    log(`serving on http://${host}:${port}`);
+  });
 })();

@@ -1,55 +1,54 @@
-import { type Express } from "express";
-import { createServer as createViteServer, createLogger } from "vite";
-import { type Server } from "http";
-import viteConfig from "../vite.config";
-import fs from "fs";
+import type { Express } from "express";
+import type { Server } from "http";
+import { createServer as createViteServer } from "vite";
+import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import fs from "fs";
 import { nanoid } from "nanoid";
 
-const viteLogger = createLogger();
-
-export async function setupVite(server: Server, app: Express) {
-  const serverOptions = {
-    middlewareMode: true,
-    hmr: { server, path: "/vite-hmr" },
-    allowedHosts: true as const,
-  };
+export async function setupVite(httpServer: Server, app: Express) {
+  // root folder React client
+  const root = path.resolve(__dirname, "..", "client");
 
   const vite = await createViteServer({
-    ...viteConfig,
-    configFile: false,
-    customLogger: {
-      ...viteLogger,
-      error: (msg, options) => {
-        viteLogger.error(msg, options);
-        process.exit(1);
+    root,
+    appType: "custom",
+    plugins: [react()],
+    resolve: {
+      alias: {
+        "@": path.resolve(root, "src"),
+        "@shared": path.resolve(__dirname, "..", "shared"),
       },
     },
-    server: serverOptions,
-    appType: "custom",
+    server: {
+      middlewareMode: true,
+      hmr: {
+        server: httpServer,
+        path: "/vite-hmr",
+      },
+    },
   });
 
+  // inject Vite middleware
   app.use(vite.middlewares);
 
+  // semua route non-/api diarahkan ke React index.html
   app.use("*", async (req, res, next) => {
-    const url = req.originalUrl;
-
     try {
-      const clientTemplate = path.resolve(
-        import.meta.dirname,
-        "..",
-        "client",
-        "index.html",
-      );
+      const url = req.originalUrl;
 
-      // always reload the index.html file from disk incase it changes
-      let template = await fs.promises.readFile(clientTemplate, "utf-8");
+      const indexHtmlPath = path.resolve(root, "index.html");
+      let template = await fs.promises.readFile(indexHtmlPath, "utf-8");
+
+      // tambahin query random biar main.tsx ke-bust cache di dev
       template = template.replace(
         `src="/src/main.tsx"`,
-        `src="/src/main.tsx?v=${nanoid()}"`,
+        `src="/src/main.tsx?v=${nanoid()}"`
       );
-      const page = await vite.transformIndexHtml(url, template);
-      res.status(200).set({ "Content-Type": "text/html" }).end(page);
+
+      template = await vite.transformIndexHtml(url, template);
+
+      res.status(200).set({ "Content-Type": "text/html" }).end(template);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
       next(e);

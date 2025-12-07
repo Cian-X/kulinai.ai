@@ -1,3 +1,4 @@
+import { useMenus } from "@/hooks/useMenus";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/layouts/admin-layout";
@@ -37,9 +38,12 @@ export default function AdminMenu() {
     available: true,
   });
 
-  const { data: menus = [], isLoading } = useQuery<MenusResponse>({
-    queryKey: ["/api/menus"],
-  });
+  const { data: menus, isLoading } = useMenus();
+// TEMP: debug code ini bikin syntax error, kita matiin dulu
+// menus?.map((menu) => (
+//   <div key={menu.id}>{menu.name}</div>
+// ));
+
 
   const createMenuMutation = useMutation({
     mutationFn: async (data: any) => {

@@ -1,13 +1,19 @@
 // server/db.ts
-import pkg from "pg";
-const { Pool } = pkg;
+import "dotenv/config";
+import { Pool } from "pg";
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is not set");
+}
+
+// Paksa parse URL biar semua field jelas string
+const dbUrl = new URL(process.env.DATABASE_URL);
 
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  host: dbUrl.hostname,
+  port: Number(dbUrl.port || 5432),
+  database: dbUrl.pathname.slice(1),
+  user: decodeURIComponent(dbUrl.username),
+  password: decodeURIComponent(dbUrl.password),
+  ssl: { rejectUnauthorized: false },
 });
-
-export async function query(text: string, params?: any[]) {
-  const res = await pool.query(text, params);
-  return res;
-}

@@ -57,6 +57,8 @@ app.get('/api/menus/:id', async (req, res) => {
 app.use((req, res) => {
   res.status(404).send('Cannot ' + req.method + ' ' + req.path);
 });
-
+if (process.env.NODE_ENV === "production") {
+  serveStatic(app);
+}
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server running on ${port}`));
