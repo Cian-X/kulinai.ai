@@ -1,51 +1,51 @@
-20:57:22.876 Running build in Washington, D.C., USA (East) – iad1
-20:57:22.876 Build machine configuration: 2 cores, 8 GB
-20:57:23.165 Cloning github.com/Cian-X/kulinai.ai (Branch: main, Commit: aa93724)
-20:57:23.166 Previous build caches not available.
-20:57:24.135 Cloning completed: 970.000ms
-20:57:24.534 Running "vercel build"
-20:57:25.148 Vercel CLI 49.0.0
-20:57:26.000 Running "install" command: `npm install --include=dev`...
-20:57:30.408 npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
-20:57:30.443 npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
-20:57:37.516 
-20:57:37.517 added 478 packages, and audited 479 packages in 11s
-20:57:37.518 
-20:57:37.518 46 packages are looking for funding
-20:57:37.518   run `npm fund` for details
-20:57:37.543 
-20:57:37.543 6 vulnerabilities (2 low, 4 moderate)
-20:57:37.544 
-20:57:37.544 To address issues that do not require attention, run:
-20:57:37.544   npm audit fix
-20:57:37.544 
-20:57:37.545 To address all issues (including breaking changes), run:
-20:57:37.545   npm audit fix --force
-20:57:37.545 
-20:57:37.545 Run `npm audit` for details.
-20:57:37.825 
-20:57:37.826 > rest-express@1.0.0 build
-20:57:37.826 > npx tsx script/build.ts
-20:57:37.826 
-20:57:39.062 building client...
-20:57:43.464 [36mvite v7.1.12 [32mbuilding for production...[36m[39m
-20:57:43.718 transforming...
-20:57:49.482 [32m✓[39m 2882 modules transformed.
-20:57:50.263 rendering chunks...
-20:57:50.281 computing gzip size...
-20:57:50.319 [2mdist/client_dist/[22m[32mclient/index.html          [39m[1m[2m    1.99 kB[22m[1m[22m[2m │ gzip:   0.82 kB[22m
-20:57:50.319 [2mdist/client_dist/[22m[2massets/[22m[35mindex-DMrQxFk6.css  [39m[1m[2m  129.21 kB[22m[1m[22m[2m │ gzip:  20.46 kB[22m
-20:57:50.319 [2mdist/client_dist/[22m[2massets/[22m[36mindex-D_2exSDQ.js   [39m[1m[33m1,045.60 kB[39m[22m[2m │ gzip: 305.68 kB[22m
-20:57:50.319 [32m✓ built in 6.64s[39m
-20:57:50.319 building server...
-20:57:50.319 [33m
-20:57:50.319 (!) Some chunks are larger than 500 kB after minification. Consider:
-20:57:50.319 - Using dynamic import() to code-split the application
-20:57:50.319 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
-20:57:50.320 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
-20:57:50.445 
-20:57:50.446   dist/index.cjs  935.7kb
-20:57:50.448 
-20:57:50.449 ⚡ Done in 123ms
-20:57:50.534 Error: No Output Directory named "client_dist" found after the Build completed. Configure the Output Directory in your Project Settings. Alternatively, configure vercel.json#outputDirectory.
-20:57:50.534 Learn More: https://vercel.link/missing-public-directory
+21:01:30.929 Running build in Washington, D.C., USA (East) – iad1
+21:01:30.932 Build machine configuration: 2 cores, 8 GB
+21:01:31.232 Cloning github.com/Cian-X/kulinai.ai (Branch: main, Commit: 7afc269)
+21:01:31.233 Previous build caches not available.
+21:01:32.217 Cloning completed: 985.000ms
+21:01:32.689 Running "vercel build"
+21:01:33.104 Vercel CLI 49.0.0
+21:01:33.674 Running "install" command: `npm install --include=dev`...
+21:01:37.900 npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+21:01:37.950 npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+21:01:45.022 
+21:01:45.024 added 478 packages, and audited 479 packages in 11s
+21:01:45.024 
+21:01:45.024 46 packages are looking for funding
+21:01:45.024   run `npm fund` for details
+21:01:45.050 
+21:01:45.050 6 vulnerabilities (2 low, 4 moderate)
+21:01:45.051 
+21:01:45.051 To address issues that do not require attention, run:
+21:01:45.051   npm audit fix
+21:01:45.051 
+21:01:45.052 To address all issues (including breaking changes), run:
+21:01:45.052   npm audit fix --force
+21:01:45.052 
+21:01:45.053 Run `npm audit` for details.
+21:01:45.514 
+21:01:45.515 > rest-express@1.0.0 build
+21:01:45.515 > npx tsx script/build.ts
+21:01:45.515 
+21:01:46.697 building client...
+21:01:46.960 [36mvite v7.1.12 [32mbuilding for production...[36m[39m
+21:01:47.215 transforming...
+21:01:52.791 [32m✓[39m 2882 modules transformed.
+21:01:53.796 rendering chunks...
+21:01:53.813 computing gzip size...
+21:01:53.845 [2mdist/[22m[32mclient/index.html          [39m[1m[2m    1.99 kB[22m[1m[22m[2m │ gzip:   0.82 kB[22m
+21:01:53.846 [2mdist/[22m[2massets/[22m[35mindex-DMrQxFk6.css  [39m[1m[2m  129.21 kB[22m[1m[22m[2m │ gzip:  20.46 kB[22m
+21:01:53.846 [2mdist/[22m[2massets/[22m[36mindex-D_2exSDQ.js   [39m[1m[33m1,045.60 kB[39m[22m[2m │ gzip: 305.68 kB[22m
+21:01:53.846 [32m✓ built in 6.67s[39m
+21:01:53.846 building server...
+21:01:53.847 [33m
+21:01:53.847 (!) Some chunks are larger than 500 kB after minification. Consider:
+21:01:53.847 - Using dynamic import() to code-split the application
+21:01:53.847 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+21:01:53.847 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+21:01:53.958 
+21:01:53.959   dist/index.cjs  935.7kb
+21:01:53.966 
+21:01:53.966 ⚡ Done in 109ms
+21:01:54.043 Error: No Output Directory named "dist" found after the Build completed. Configure the Output Directory in your Project Settings. Alternatively, configure vercel.json#outputDirectory.
+21:01:54.043 Learn More: https://vercel.link/missing-public-directory
