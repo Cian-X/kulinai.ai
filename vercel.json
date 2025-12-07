@@ -1,13 +1,7 @@
 {
   "version": 2,
+  "outputDirectory": "dist",
   "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    },
     {
       "src": "dist/index.cjs",
       "use": "@vercel/node",
@@ -23,7 +17,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "dist/index.html"
+      "dest": "/index.html"
     }
   ]
 }
